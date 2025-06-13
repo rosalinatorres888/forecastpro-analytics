@@ -299,6 +299,88 @@ function App() {
           )}
         </div>
 
+        {/* Configuration Section */}
+        {uploadedData && (
+          <div style={{ 
+            backgroundColor: 'white', 
+            borderRadius: '12px',
+            padding: '2rem',
+            marginBottom: '2rem',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.07)'
+          }}>
+            <h2 style={{ 
+              fontSize: '1.5rem', 
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <Settings size={24} />
+              Configuration
+            </h2>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                  Forecasting Model
+                </label>
+                <select 
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  style={{ 
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '6px',
+                    border: '1px solid #ddd',
+                    fontSize: '1rem'
+                  }}
+                >
+                  <option value="all">All Models (Ensemble)</option>
+                  <option value="linear">Linear Trend</option>
+                  <option value="exponential">Exponential Smoothing</option>
+                  <option value="movingAverage">Moving Average</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+                  Forecast Periods: {forecastPeriods}
+                </label>
+                <input 
+                  type="range"
+                  min="1"
+                  max="24"
+                  value={forecastPeriods}
+                  onChange={(e) => setForecastPeriods(parseInt(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={runAnalysis}
+              disabled={isProcessing}
+              style={{ 
+                marginTop: '2rem',
+                padding: '0.75rem 2rem',
+                backgroundColor: '#667eea',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                opacity: isProcessing ? 0.7 : 1
+              }}
+            >
+              <Play size={20} />
+              {isProcessing ? 'Processing...' : 'Run Forecast'}
+            </button>
+          </div>
+        )}
 
         {/* Results Section */}
         {results && (
