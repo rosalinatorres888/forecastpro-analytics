@@ -133,7 +133,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Rosalina Torres**
 - GitHub: [@rosalinatorres888](https://github.com/rosalinatorres888)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/rosalina2https://github.com)
+- LinkedIn: [LinkedIn](https://linkedin.com/in/rosalina2)
 - Portfolio: [https://github.com/rosalinatorres888](https://github.com/rosalinatorres888)
 
 ## 🙏 Acknowledgments
