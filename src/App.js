@@ -1,23 +1,20 @@
-
-
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import ModelSelection from './ModelSelection';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { Upload, TrendingUp, Download, AlertCircle, CheckCircle, Activity, BarChart3, Settings, Play } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Upload, TrendingUp, Download, AlertCircle, CheckCircle, Activity, BarChart3 } from 'lucide-react';
 
 function App() {
   const [uploadedData, setUploadedData] = useState(null);
   const [fileName, setFileName] = useState('');
   const [selectedModel, setSelectedModel] = useState('all');
   const [forecastPeriods, setForecastPeriods] = useState(6);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [results, setResults] = useState(null);
 
   // Handle file upload
   const handleFileUpload = useCallback((event) => {
-  console.log('File upload triggered');
+    console.log('File upload triggered');
     const file = event.target.files[0];
-    if (!file)return;
+    if (!file) return;
     console.log('File selected:', file.name);
     if (!file.name.endsWith('.csv')) {
       alert('Please upload a CSV file');
@@ -25,14 +22,12 @@ function App() {
     }
 
     setFileName(file.name);
-    setIsProcessing(true);
 
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const text = e.target.result;
         const rows = text.split('\n').filter(row => row.trim());
-        const headers = rows[0].split(',').map(h => h.trim());
         
         // Parse CSV data
         const data = rows.slice(1).map((row, index) => {
@@ -45,10 +40,8 @@ function App() {
         });
 
         setUploadedData(data);
-        setIsProcessing(false);
       } catch (error) {
         alert('Error parsing CSV file. Please ensure it has the correct format.');
-        setIsProcessing(false);
       }
     };
     reader.readAsText(file);
@@ -81,7 +74,6 @@ function App() {
       const linear = intercept + slope * period;
       
       // Exponential Smoothing (simplified)
-      const alpha = 0.3;
       const exponential = lastValue * Math.pow(1.02, i); // Simplified growth
       
       // Moving Average (using last 3 periods)
@@ -105,11 +97,6 @@ function App() {
   const calculateMetrics = useCallback(() => {
     if (!uploadedData || uploadedData.length < 10) return null;
 
-    // Split data for validation (80/20)
-    const trainSize = Math.floor(uploadedData.length * 0.8);
-    const trainData = uploadedData.slice(0, trainSize);
-    const testData = uploadedData.slice(trainSize);
-
     // Simple metrics (demonstration purposes)
     const metrics = {
       linear: {
@@ -131,32 +118,6 @@ function App() {
 
     return metrics;
   }, [uploadedData]);
-
-  // Run analysis
-  const runAnalysis = useCallback(() => {
-    if (!uploadedData) return;
-    
-    setIsProcessing(true);
-    
-    // Simulate processing time
-    setTimeout(() => {
-      const forecasts = generateForecasts();
-      const metrics = calculateMetrics();
-      
-      setResults({
-        forecasts,
-        metrics,
-        summary: {
-          dataPoints: uploadedData.length,
-          average: uploadedData.reduce((sum, d) => sum + d.value, 0) / uploadedData.length,
-          trend: 'increasing', // Simplified
-          seasonality: 'none detected' // Simplified
-        }
-      });
-      
-      setIsProcessing(false);
-    }, 1500);
-  }, [uploadedData, generateForecasts, calculateMetrics]);
 
   // Prepare chart data
   const chartData = useMemo(() => {
@@ -198,6 +159,24 @@ function App() {
     a.download = 'forecast_results.csv';
     a.click();
   }, [results, uploadedData]);
+
+  useEffect(() => {
+    if (uploadedData) {
+      const forecasts = generateForecasts();
+      const metrics = calculateMetrics();
+      if (forecasts && metrics) {
+        setResults({
+          forecasts,
+          metrics,
+          summary: {
+            dataPoints: uploadedData.length,
+            trend: 'upward',
+            average: uploadedData.reduce((sum, d) => sum + d.value, 0) / uploadedData.length
+          }
+        });
+      }
+    }
+  }, [uploadedData, generateForecasts, calculateMetrics]);
 
   return (
     <div style={{ 
